@@ -38,6 +38,27 @@ class TextWindow < BaseWindow
     @line_buffer = LineBuffer.new(cap: DEFAULT_BUFFER_SIZE, width: wrap_width)
   end
 
+  # Whether a <clearStream> for one of the window's streams empties it
+  # (layout attribute +clearable+). Off by default: DragonRealms clears
+  # streams whose windows are meant to keep their history.
+  #
+  # @return [Boolean]
+  attr_accessor :clearable
+
+  # Empty the window for a <clearStream> of one of its streams, when it is
+  # {#clearable}, so the game can redraw it whole: a panel such as a live
+  # combat roster. The lines that follow fill it from the top row again.
+  #
+  # @return [void]
+  def stream_cleared
+    return unless @clearable
+
+    drop_selection
+    @line_buffer = LineBuffer.new(cap: @line_buffer.cap, width: @line_buffer.width)
+    paint_content
+    update_scrollbar
+  end
+
   # @return [Integer] maximum number of logical lines retained in the buffer
   def max_buffer_size
     @line_buffer.cap
@@ -133,6 +154,7 @@ BaseWindow.register_type('text') do |height, width, top, left, element, wm|
   window.scrollok(true)
   window.max_buffer_size = element.attributes['buffer-size'] || 1000
   window.time_stamp = BaseWindow.parse_flag_attr(element, 'timestamp')
+  window.clearable = BaseWindow.parse_flag_attr(element, 'clearable')
   window.clock = wm.clock
   # A window with no value is still built, and shows no stream.
   streams.each do |str|

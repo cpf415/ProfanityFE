@@ -837,6 +837,15 @@ RSpec.describe TagHandlers do
 
       expect(events).to be_empty
     end
+
+    it "asks another stream's window to clear" do
+      events = collect_events(:stream_cleared)
+
+      receive_from_server('<clearStream id="assess"/>', '<clearStream id="percWindow"/>',
+                          '<clearStream/>')
+
+      expect(events).to eq [{ type: :stream_cleared, id: 'assess' }]
+    end
   end
 
   describe '<progressBar>' do

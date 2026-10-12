@@ -167,6 +167,10 @@ class EventBridge
       @wm.stream[Streams::PERC]&.stream_cleared
     end
 
+    event_bus.on(:stream_cleared) do |data|
+      @wm.stream[data[:id]]&.stream_cleared
+    end
+
     # ---- Special events ----
 
     event_bus.on(:launch_url) do |data|

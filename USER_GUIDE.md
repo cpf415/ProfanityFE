@@ -312,6 +312,7 @@ game output. Text windows have a 1-column scrollbar on the right edge.
 | `value` | yes | Comma-separated list of stream names to display in this window |
 | `buffer-size` | no | Maximum game lines retained in the scroll buffer, however many rows each wraps to (default: `1000`) |
 | `timestamp` | no | Set to `'true'` to append `[HH:MM]` timestamps to each line; leave it out or set `'false'` for none |
+| `clearable` | no | Set to `'true'` to empty the window when the game sends `<clearStream id='…'/>` for one of its streams, so the game can redraw it whole (a live panel); the lines that follow fill it from the top. Leave it out or set `'false'` to keep the lines |
 
 **Examples:**
 

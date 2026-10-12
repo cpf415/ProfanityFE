@@ -501,13 +501,21 @@ module TagHandlers
     @router.resync
   end
 
-  # Handle <clearStream id="percWindow"/> tag.
+  # Handle <clearStream id="..."/>: percWindow clears the spell window;
+  # any other stream is cleared by its window, if that window clears (a
+  # text window with +clearable='true'+, see {TextWindow#stream_cleared}).
   #
   # @param xml [String] the tag
   # @param _text_buffer [String] the text collected so far on the line (unused)
   # @return [void]
   def handle_clear_stream(xml, _text_buffer)
-    @event_bus.emit(:clear_spells) if XmlTokenizer.attrs(xml)['id'] == Streams::PERC
+    return unless (id = XmlTokenizer.attrs(xml)['id'])
+
+    if id == Streams::PERC
+      @event_bus.emit(:clear_spells)
+    else
+      @event_bus.emit(:stream_cleared, id: id)
+    end
   end
 
   # Handle <cmdlist ...>, the start of the game's command table for coord
